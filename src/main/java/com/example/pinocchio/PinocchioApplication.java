@@ -32,6 +32,10 @@ public class PinocchioApplication extends Application {
         topBarBorderPane.setMinHeight(32);
         topBarBorderPane.setMaxHeight(32);
         topBarBorderPane.setBackground(new Background(new BackgroundFill(Color.valueOf("0xADC178"), CornerRadii.EMPTY, Insets.EMPTY)));
+        topBarBorderPane.setOnMousePressed(pressedEvent -> topBarBorderPane.setOnMouseDragged(draggedEvent -> {
+            stage.setX(draggedEvent.getScreenX() - pressedEvent.getSceneX());
+            stage.setY(draggedEvent.getScreenY() - pressedEvent.getSceneY());
+        }));
 
         Label label = new Label("Pinocchio");
         label.setMaxHeight(32);
