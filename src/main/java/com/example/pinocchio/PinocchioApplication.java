@@ -15,6 +15,9 @@ import javafx.stage.StageStyle;
 
 public class PinocchioApplication extends Application {
 
+    public static final Font DEFAULT_FONT = new Font(18);
+    public static final Chapter CHAPTER_ONE = new Chapter(1);
+
     public void start(Stage stage) {
 
         stage.initStyle(StageStyle.TRANSPARENT);
@@ -39,7 +42,7 @@ public class PinocchioApplication extends Application {
 
         Label label = new Label("Pinocchio");
         label.setMaxHeight(32);
-        label.setFont(new Font(18));
+        label.setFont(DEFAULT_FONT);
         label.setPadding(new Insets(0, 0, 0, 8));
         topBarBorderPane.setLeft(label);
 
@@ -89,8 +92,12 @@ public class PinocchioApplication extends Application {
         Pane italianPane = new Pane();
         italianPane.setPrefHeight(700);
         italianPane.setPrefWidth(660);
-        Label italianText = new Label("Ciao");
+        Label italianText = new Label(CHAPTER_ONE.getPage(0).getItalianText());
         italianText.setPadding(new Insets(10, 10, 10, 10));
+        italianText.setFont(DEFAULT_FONT);
+        italianText.setPrefHeight(690);
+        italianText.setPrefWidth(650);
+        italianText.setAlignment(Pos.TOP_LEFT);
         italianPane.getChildren().add(italianText);
 
         Region middleLine = new Region();
@@ -101,8 +108,12 @@ public class PinocchioApplication extends Application {
         Pane englishPane = new Pane();
         englishPane.setPrefHeight(700);
         englishPane.setPrefWidth(660);
-        Label englishText = new Label("Hello");
+        Label englishText = new Label(CHAPTER_ONE.getPage(0).getEnglishText());
         englishText.setPadding(new Insets(10, 10, 10, 10));
+        englishText.setFont(DEFAULT_FONT);
+        englishText.setPrefHeight(690);
+        englishText.setPrefWidth(650);
+        englishText.setAlignment(Pos.TOP_LEFT);
         englishPane.getChildren().add(englishText);
 
         bookHBox.getChildren().addAll(italianPane, middleLine, englishPane);
