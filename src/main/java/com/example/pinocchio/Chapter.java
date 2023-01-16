@@ -8,9 +8,11 @@ import java.util.ArrayList;
 public class Chapter {
 
     private ArrayList<Page> pages;
+    private int currentPageIndex;
 
     public Chapter(int chapterNumber) {
         pages = new ArrayList<>();
+        currentPageIndex = 0;
         readFromFile("Italian_Chapter_" + chapterNumber, true);
         readFromFile("English_Chapter_" + chapterNumber, false);
     }
@@ -32,11 +34,19 @@ public class Chapter {
                     stringBuilder = new StringBuilder();
                 } else stringBuilder.append(line).append("\n");
             }
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
     }
 
-    public Page getPage(int index) {
-        return pages.get(index);
+    public Page getCurrentPage() {
+        return pages.get(currentPageIndex);
+    }
+
+    public Page nextPage() {
+        return pages.get(++currentPageIndex);
+    }
+
+    public Page previousPage() {
+        return pages.get(--currentPageIndex);
     }
 
 }

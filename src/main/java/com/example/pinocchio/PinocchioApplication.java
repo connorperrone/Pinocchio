@@ -1,6 +1,8 @@
 package com.example.pinocchio;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,6 +19,9 @@ public class PinocchioApplication extends Application {
 
     public static final Font DEFAULT_FONT = new Font(18);
     public static final Chapter CHAPTER_ONE = new Chapter(1);
+
+    private static Label italianLabel;
+    private static Label englishLabel;
 
     public void start(Stage stage) {
 
@@ -50,25 +55,13 @@ public class PinocchioApplication extends Application {
         minimizeButtonImageView.setPreserveRatio(true);
         minimizeButtonImageView.setFitWidth(24);
         minimizeButtonImageView.setFitHeight(24);
-
-        Button minimizeButton = new Button();
-        minimizeButton.setGraphic(minimizeButtonImageView);
-        minimizeButton.setMinSize(24, 32);
-        minimizeButton.setMaxSize(24, 32);
-        minimizeButton.setBackground(Background.EMPTY);
-        minimizeButton.setOnAction(event -> stage.setIconified(true));
+        Button minimizeButton = createButton(minimizeButtonImageView, 24, 32, Background.EMPTY, event -> stage.setIconified(true));
 
         ImageView exitButtonImageView = new ImageView("exit_icon.png");
         exitButtonImageView.setPreserveRatio(true);
         exitButtonImageView.setFitWidth(24);
         exitButtonImageView.setFitHeight(24);
-
-        Button exitButton = new Button();
-        exitButton.setGraphic(exitButtonImageView);
-        exitButton.setMinSize(24, 32);
-        exitButton.setMaxSize(24, 32);
-        exitButton.setBackground(Background.EMPTY);
-        exitButton.setOnAction(event -> System.exit(0));
+        Button exitButton = createButton(exitButtonImageView, 24, 32, Background.EMPTY, event -> System.exit(0));
 
         HBox buttonsHBox = new HBox();
         buttonsHBox.getChildren().addAll(minimizeButton, exitButton);
@@ -92,7 +85,8 @@ public class PinocchioApplication extends Application {
         Pane italianPane = new Pane();
         italianPane.setPrefHeight(700);
         italianPane.setPrefWidth(660);
-        Label italianText = new Label(CHAPTER_ONE.getPage(0).getItalianText());
+        Label italianText = new Label(CHAPTER_ONE.getCurrentPage().getItalianText());
+        italianLabel = italianText;
         italianText.setPadding(new Insets(10, 10, 10, 10));
         italianText.setFont(DEFAULT_FONT);
         italianText.setPrefHeight(690);
@@ -108,7 +102,8 @@ public class PinocchioApplication extends Application {
         Pane englishPane = new Pane();
         englishPane.setPrefHeight(700);
         englishPane.setPrefWidth(660);
-        Label englishText = new Label(CHAPTER_ONE.getPage(0).getEnglishText());
+        Label englishText = new Label(CHAPTER_ONE.getCurrentPage().getEnglishText());
+        englishLabel = englishText;
         englishText.setPadding(new Insets(10, 10, 10, 10));
         englishText.setFont(DEFAULT_FONT);
         englishText.setPrefHeight(690);
@@ -123,13 +118,35 @@ public class PinocchioApplication extends Application {
         BorderPane bookPane = new BorderPane();
         bookPane.setMaxWidth(1328);
         bookPane.setCenter(bookHBox);
-
-
-
         vBox.getChildren().add(bookPane);
+
+
+
+        BorderPane bottomBorderPane = new BorderPane();
+
+        bottomBorderPane.setLeft(createButton(new ImageView("previous_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.previousPage())));
+        bottomBorderPane.setRight(createButton(new ImageView("next_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.nextPage())));
+
+        vBox.getChildren().add(bottomBorderPane);
+
         stage.setScene(new Scene(vBox));
         stage.show();
 
+    }
+
+    public static Button createButton(ImageView imageView, double width, double height, Background background, EventHandler<ActionEvent> eventHandler) {
+        Button button = new Button();
+        button.setGraphic(imageView);
+        button.setMinSize(width, height);
+        button.setMaxSize(width, height);
+        button.setBackground(background);
+        button.setOnAction(eventHandler);
+        return button;
+    }
+
+    public static void updatePage(Page page) {
+        italianLabel.setText(page.getItalianText());
+        englishLabel.setText(page.getEnglishText());
     }
 
     public static void main(String[] args) {
