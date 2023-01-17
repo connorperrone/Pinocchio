@@ -123,9 +123,26 @@ public class PinocchioApplication extends Application {
 
 
         BorderPane bottomBorderPane = new BorderPane();
+        bottomBorderPane.setPadding(new Insets(0, 8, 0, 8));
 
-        bottomBorderPane.setLeft(createButton(new ImageView("previous_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.previousPage())));
-        bottomBorderPane.setRight(createButton(new ImageView("next_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.nextPage())));
+        HBox previousPageHbox = new HBox();
+        previousPageHbox.setSpacing(4);
+        previousPageHbox.getChildren().add(createButton(new ImageView("previous_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.previousPage())));
+        Label previousPageLabel = new Label("Previous page");
+        previousPageLabel.setFont(DEFAULT_FONT);
+        Insets pageLabelPadding = new Insets(2, 0, 0, 0);
+        previousPageLabel.setPadding(pageLabelPadding);
+        previousPageHbox.getChildren().add(previousPageLabel);
+        bottomBorderPane.setLeft(previousPageHbox);
+
+        HBox nextPageHbox = new HBox();
+        nextPageHbox.setSpacing(4);
+        Label nextPageLabel = new Label("Next page");
+        nextPageLabel.setFont(DEFAULT_FONT);
+        nextPageLabel.setPadding(pageLabelPadding);
+        nextPageHbox.getChildren().add(nextPageLabel);
+        nextPageHbox.getChildren().add(createButton(new ImageView("next_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.nextPage())));
+        bottomBorderPane.setRight(nextPageHbox);
 
         vBox.getChildren().add(bottomBorderPane);
 
@@ -145,6 +162,7 @@ public class PinocchioApplication extends Application {
     }
 
     public static void updatePage(Page page) {
+        if (page == null) return;
         italianLabel.setText(page.getItalianText());
         englishLabel.setText(page.getEnglishText());
     }

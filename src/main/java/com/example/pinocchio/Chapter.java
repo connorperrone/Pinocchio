@@ -42,10 +42,12 @@ public class Chapter {
     }
 
     public Page nextPage() {
+        if (pages.size() < currentPageIndex + 2) return null;
         return pages.get(++currentPageIndex);
     }
 
     public Page previousPage() {
+        if (currentPageIndex - 1 < 0) return null;
         return pages.get(--currentPageIndex);
     }
 
