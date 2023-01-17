@@ -15,15 +15,25 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.util.ArrayList;
+
 public class PinocchioApplication extends Application {
 
     public static final Font DEFAULT_FONT = new Font(18);
-    public static final Chapter CHAPTER_ONE = new Chapter(1);
+
+    private static Chapter chapter;
+    private static ArrayList<Chapter> loadedChapters;
 
     private static Label italianLabel;
     private static Label englishLabel;
+    private static Label previousPageLabel;
+    private static Label nextPageLabel;
 
     public void start(Stage stage) {
+
+        chapter = new Chapter(1);
+        loadedChapters = new ArrayList<>();
+        loadedChapters.add(chapter);
 
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
@@ -85,14 +95,13 @@ public class PinocchioApplication extends Application {
         Pane italianPane = new Pane();
         italianPane.setPrefHeight(700);
         italianPane.setPrefWidth(660);
-        Label italianText = new Label(CHAPTER_ONE.getCurrentPage().getItalianText());
-        italianLabel = italianText;
-        italianText.setPadding(new Insets(10, 10, 10, 10));
-        italianText.setFont(DEFAULT_FONT);
-        italianText.setPrefHeight(690);
-        italianText.setPrefWidth(650);
-        italianText.setAlignment(Pos.TOP_LEFT);
-        italianPane.getChildren().add(italianText);
+        italianLabel = new Label(chapter.getCurrentPage().getItalianText());
+        italianLabel.setPadding(new Insets(10, 10, 10, 10));
+        italianLabel.setFont(DEFAULT_FONT);
+        italianLabel.setPrefHeight(690);
+        italianLabel.setPrefWidth(650);
+        italianLabel.setAlignment(Pos.TOP_LEFT);
+        italianPane.getChildren().add(italianLabel);
 
         Region middleLine = new Region();
         middleLine.setPrefHeight(700);
@@ -102,14 +111,13 @@ public class PinocchioApplication extends Application {
         Pane englishPane = new Pane();
         englishPane.setPrefHeight(700);
         englishPane.setPrefWidth(660);
-        Label englishText = new Label(CHAPTER_ONE.getCurrentPage().getEnglishText());
-        englishLabel = englishText;
-        englishText.setPadding(new Insets(10, 10, 10, 10));
-        englishText.setFont(DEFAULT_FONT);
-        englishText.setPrefHeight(690);
-        englishText.setPrefWidth(650);
-        englishText.setAlignment(Pos.TOP_LEFT);
-        englishPane.getChildren().add(englishText);
+        englishLabel = new Label(chapter.getCurrentPage().getEnglishText());
+        englishLabel.setPadding(new Insets(10, 10, 10, 10));
+        englishLabel.setFont(DEFAULT_FONT);
+        englishLabel.setPrefHeight(690);
+        englishLabel.setPrefWidth(650);
+        englishLabel.setAlignment(Pos.TOP_LEFT);
+        englishPane.getChildren().add(englishLabel);
 
         bookHBox.getChildren().addAll(italianPane, middleLine, englishPane);
         bookHBox.setBackground(new Background(new BackgroundFill(Color.valueOf("0xF0EAD2"), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -127,8 +135,8 @@ public class PinocchioApplication extends Application {
 
         HBox previousPageHbox = new HBox();
         previousPageHbox.setSpacing(4);
-        previousPageHbox.getChildren().add(createButton(new ImageView("previous_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.previousPage())));
-        Label previousPageLabel = new Label("Previous page");
+        previousPageHbox.getChildren().add(createButton(new ImageView("previous_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(chapter.previousPage())));
+        previousPageLabel = new Label("Previous page");
         previousPageLabel.setFont(DEFAULT_FONT);
         Insets pageLabelPadding = new Insets(2, 0, 0, 0);
         previousPageLabel.setPadding(pageLabelPadding);
@@ -137,11 +145,11 @@ public class PinocchioApplication extends Application {
 
         HBox nextPageHbox = new HBox();
         nextPageHbox.setSpacing(4);
-        Label nextPageLabel = new Label("Next page");
+        nextPageLabel = new Label("Next page");
         nextPageLabel.setFont(DEFAULT_FONT);
         nextPageLabel.setPadding(pageLabelPadding);
         nextPageHbox.getChildren().add(nextPageLabel);
-        nextPageHbox.getChildren().add(createButton(new ImageView("next_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(CHAPTER_ONE.nextPage())));
+        nextPageHbox.getChildren().add(createButton(new ImageView("next_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(chapter.nextPage())));
         bottomBorderPane.setRight(nextPageHbox);
 
         vBox.getChildren().add(bottomBorderPane);
@@ -163,8 +171,40 @@ public class PinocchioApplication extends Application {
 
     public static void updatePage(Page page) {
         if (page == null) return;
+        if (chapter.isOnFirstPage()) {
+            if (chapter.getChapterNumber() != 1) {
+                previousPageLabel.setText("Chapter " + (chapter.getChapterNumber() - 1));
+            }
+        } else if (chapter.isOnLastPage()) {
+            if (chapter.getChapterNumber() != 36) {
+                nextPageLabel.setText("Chapter " + (chapter.getChapterNumber() + 1));
+            }
+        } else {
+            if (previousPageLabel.getText().startsWith("C")) {
+                previousPageLabel.setText("Previous page");
+            }
+            if (nextPageLabel.getText().startsWith("C")) {
+                nextPageLabel.setText("Next page");
+            }
+        }
         italianLabel.setText(page.getItalianText());
         englishLabel.setText(page.getEnglishText());
+    }
+
+    public static void switchChapter(int chapterNumber) {
+        boolean forward = chapter.getChapterNumber() < chapterNumber;
+        if (chapterNumber > loadedChapters.size()) {
+            chapter = new Chapter(chapterNumber);
+            loadedChapters.add(chapter);
+        } else {
+            chapter = loadedChapters.get(chapterNumber - 1);
+        }
+        if (forward) {
+            nextPageLabel.setText("Next page");
+        } else {
+            previousPageLabel.setText("Previous page");
+        }
+        updatePage(forward ? chapter.getFirstPage() : chapter.getLastPage());
     }
 
     public static void main(String[] args) {
