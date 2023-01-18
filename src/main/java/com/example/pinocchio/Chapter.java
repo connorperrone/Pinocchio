@@ -22,7 +22,8 @@ public class Chapter {
     private void readFromFile(String fileName, boolean italian) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader("." + File.separator + "src" +
-                    File.separator + "main" + File.separator + "resources" + File.separator + fileName + ".txt"));
+                    File.separator + "main" + File.separator + "resources" + File.separator +
+                    "text" + File.separator + fileName + ".txt"));
             String line;
             StringBuilder stringBuilder = new StringBuilder();
             int index = 0;
