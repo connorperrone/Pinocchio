@@ -11,10 +11,10 @@ public class Chapter {
     private ArrayList<Page> pages;
     private int currentPageIndex;
 
-    public Chapter(int chapterNumber, int currentPageIndex) {
+    public Chapter(int chapterNumber) {
         this.chapterNumber = chapterNumber;
         pages = new ArrayList<>();
-        this.currentPageIndex = currentPageIndex;
+        currentPageIndex = 0;
         readFromFile("Italian_Chapter_" + chapterNumber, true);
         readFromFile("English_Chapter_" + chapterNumber, false);
     }
@@ -42,10 +42,6 @@ public class Chapter {
 
     public int getChapterNumber() {
         return chapterNumber;
-    }
-
-    public int getNumberOfPages() {
-        return pages.size();
     }
 
     public Page getCurrentPage() {
@@ -82,14 +78,6 @@ public class Chapter {
 
     public boolean isOnLastPage() {
         return currentPageIndex == pages.size() - 1;
-    }
-
-    public int getCurrentPageIndex() {
-        return currentPageIndex;
-    }
-
-    public void setCurrentPageIndex(int currentPageIndex) {
-        this.currentPageIndex = currentPageIndex;
     }
 
 }

@@ -15,16 +15,14 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class PinocchioApplication extends Application {
 
     public static final Font DEFAULT_FONT = new Font(18);
 
-    private static Data data;
-
     private static Chapter chapter;
-    private static HashMap<Integer, Chapter> loadedChapters;
+    private static ArrayList<Chapter> loadedChapters;
 
     private static Label italianLabel;
     private static Label englishLabel;
@@ -33,13 +31,9 @@ public class PinocchioApplication extends Application {
 
     public void start(Stage stage) {
 
-        data = Data.load();
-
-        stage.setOnCloseRequest(event -> data.save());
-
-        chapter = new Chapter(data.getChapterNumber(), data.getCurrentPageIndex());
-        loadedChapters = new HashMap<>();
-        loadedChapters.put(chapter.getChapterNumber(), chapter);
+        chapter = new Chapter(1);
+        loadedChapters = new ArrayList<>();
+        loadedChapters.add(chapter);
 
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
@@ -77,10 +71,7 @@ public class PinocchioApplication extends Application {
         exitButtonImageView.setPreserveRatio(true);
         exitButtonImageView.setFitWidth(24);
         exitButtonImageView.setFitHeight(24);
-        Button exitButton = createButton(exitButtonImageView, 24, 32, Background.EMPTY, event -> {
-            data.save();
-            stage.close();
-        });
+        Button exitButton = createButton(exitButtonImageView, 24, 32, Background.EMPTY, event -> System.exit(0));
 
         HBox buttonsHBox = new HBox();
         buttonsHBox.getChildren().addAll(minimizeButton, exitButton);
@@ -145,7 +136,7 @@ public class PinocchioApplication extends Application {
         HBox previousPageHbox = new HBox();
         previousPageHbox.setSpacing(4);
         previousPageHbox.getChildren().add(createButton(new ImageView("previous_page_icon.png"), 64, 32, Background.EMPTY, event -> updatePage(chapter.previousPage())));
-        previousPageLabel = new Label((chapter.getChapterNumber() == 1 || !chapter.isOnFirstPage()) ? "Previous page" : "Chapter " + (chapter.getChapterNumber() - 1));
+        previousPageLabel = new Label("Previous page");
         previousPageLabel.setFont(DEFAULT_FONT);
         Insets pageLabelPadding = new Insets(2, 0, 0, 0);
         previousPageLabel.setPadding(pageLabelPadding);
@@ -154,7 +145,7 @@ public class PinocchioApplication extends Application {
 
         HBox nextPageHbox = new HBox();
         nextPageHbox.setSpacing(4);
-        nextPageLabel = new Label((chapter.getChapterNumber() == 36 || !chapter.isOnLastPage()) ? "Next page" : "Chapter " + (chapter.getChapterNumber() + 1));
+        nextPageLabel = new Label("Next page");
         nextPageLabel.setFont(DEFAULT_FONT);
         nextPageLabel.setPadding(pageLabelPadding);
         nextPageHbox.getChildren().add(nextPageLabel);
@@ -198,23 +189,21 @@ public class PinocchioApplication extends Application {
         }
         italianLabel.setText(page.getItalianText());
         englishLabel.setText(page.getEnglishText());
-        data.setCurrentPageIndex(chapter.getCurrentPageIndex());
     }
 
     public static void switchChapter(int chapterNumber) {
         boolean forward = chapter.getChapterNumber() < chapterNumber;
-        if (loadedChapters.containsKey(chapterNumber)) {
-            chapter = loadedChapters.get(chapterNumber);
+        if (chapterNumber > loadedChapters.size()) {
+            chapter = new Chapter(chapterNumber);
+            loadedChapters.add(chapter);
         } else {
-            chapter = new Chapter(chapterNumber, 0);
-            if (!forward) chapter.setCurrentPageIndex(chapter.getNumberOfPages() - 1);
+            chapter = loadedChapters.get(chapterNumber - 1);
         }
         if (forward) {
             nextPageLabel.setText("Next page");
         } else {
             previousPageLabel.setText("Previous page");
         }
-        data.setChapterNumber(chapterNumber);
         updatePage(forward ? chapter.getFirstPage() : chapter.getLastPage());
     }
 
